@@ -8,7 +8,7 @@ class loginPage():
     def __init__(self):
         self.root = root
         self.background()
-        self.frames()
+        # self.frames()
         self.labels()
         self.inputs()
         self.buttons()
@@ -19,7 +19,7 @@ class loginPage():
         self.root.configure(background="#ffc104")
         self.root.resizable(False, False)
         self.root.attributes("-fullscreen", False)
-        self.root.maxsize = "1024x768"
+        self.root.maxsize = "320x480"
         self.root.geometry(self.root.maxsize)
 
     def frames(self):
@@ -27,39 +27,44 @@ class loginPage():
         self.mainFrame.place(relx=0.3, rely=0.23, relwidth=0.4, relheight=0.4)
 
     def labels(self):
-        self.icon = Label(text="ICON")
-        self.icon.place(relx=0.45, rely=0.14, relwidth=0.11, relheight=0.05)
+        # BOT TRADER LABEL
+        self.icon = Label(text="Bot Trader",font=('Impact', 14))
+        self.icon.place(relx=0.15, rely=0.14, relwidth=0.35, relheight=0.05)
 
+        # LOGIN LABEL
         self.loginLabel = Label(
-            self.mainFrame, text="Login", background="#23FF01")
-        self.loginLabel.place(relx=0.15, rely=0, relwidth=0.1, relheight=0.1)
+            text="Login", background="#23FF01")
+        self.loginLabel.place(relx=0.15, rely=0.25, relwidth=0.1, relheight=0.05)
 
+        # PASSWORD LABEL
         self.passwordLabel = Label(
-            self.mainFrame, text="Senha", background="#23FF01")
-        self.passwordLabel.place(relx=0.15, rely=0.22,
-                                 relwidth=0.1, relheight=0.1)
+            text="Senha", background="#23FF01")
+        self.passwordLabel.place(relx=0.15, rely=0.43,relwidth=0.1, relheight=0.05)
 
     def inputs(self):
-        self.loginInput = Entry(self.mainFrame, font="Arial", width=15)
-        self.loginInput.place(relx=0.15, rely=0.1,
-                              relwidth=0.7, relheight=0.08)
+        # LOGIN INPUT
+        self.loginInput = Entry(font=('Verdana', 10), width=15)
+        self.loginInput.place(relx=0.15, rely=0.31,
+                              relwidth=0.7, relheight=0.05)
 
-        self.passwordInput = Entry(self.mainFrame,show="*", font="Arial", width=15)
-        self.passwordInput.place(relx=0.15, rely=0.31,
-                                 relwidth=0.7, relheight=0.08)
+        # PASSWORD INPUT
+        self.passwordInput = Entry(
+            show="*", font=('Verdana', 10), width=15)
+        self.passwordInput.place(relx=0.15, rely=0.49,
+                                 relwidth=0.7, relheight=0.05)
 
     def buttons(self):
         ...
         # remeberLogin = "Lembrar login"
         # val = ""
         # v = self.root.IntVar()
-        # v.set(1)        
+        # v.set(1)
 
         # self.radioButton = Radiobutton(
-        #            self.root, 
+        #            self.root,
         #            text=remeberLogin,
-        #            padx = 20, 
-        #            variable=v, 
+        #            padx = 20,
+        #            variable=v,
         #         #    command=ShowChoice,
         #            value=val)
 
