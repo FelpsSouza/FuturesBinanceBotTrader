@@ -45,8 +45,8 @@ lastOrder = i['side']
 levarege = 50
 
 RSI_PERIOD = 14
-RSI_OB = 80
-RSI_OS = 20
+RSI_OB = 75
+RSI_OS = 25
 
 MFI_OB = 80
 MFI_OS = 20
@@ -201,7 +201,7 @@ def on_message(ws, message):
             print(f"Profit: {round(float(cv_profit),3)}")
             #print(f"Real Profit: {r_Profit}")
             print(f"PNL(ROE%): {round(percent_profit, 2)}%")
-            print(f"Fee: {fee}")
+            print(f"Fee: {round(fee, 4)}")
             print('='*74)
             print(f'Position: {in_position}')
 

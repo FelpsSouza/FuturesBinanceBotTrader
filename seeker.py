@@ -11,11 +11,11 @@ import pprint  # TODO: APAGAR DPS DE FORMATADO
 from binance.exceptions import BinanceAPIException, BinanceOrderException
 #==============================================================================#
 
-if cfg.testFrame[-1] == 'm':
-    tf1 = int(re.findall('\d+', cfg.testFrame)[0])
+if cfg.tframe[-1] == 'm':
+    tf1 = int(re.findall('\d+', cfg.tframe)[0])
     tme_frame = 1 * tf1
-if cfg.testFrame[-1] == 'h':
-    tf1 = int(re.findall('\d+', cfg.testFrame)[0])
+if cfg.tframe[-1] == 'h':
+    tf1 = int(re.findall('\d+', cfg.tframe)[0])
     tme_frame = 60 * tf1
 
 F_SOCKET = cfg.fWsLink
@@ -23,7 +23,7 @@ F_SOCKET = cfg.fWsLink
 client = Client(cfg.API_KEY, cfg.API_SECRET)
 
 TRADE_SYMBOL = cfg.symbol.upper()
-TRADE_QUANTITY = cfg.quantity
+TRADE_QUANTITY = 0.005  # TODO: Passar para config.py
 
 in_position = False
 
@@ -45,8 +45,8 @@ lastOrder = i['side']
 levarege = 50
 
 RSI_PERIOD = 14
-RSI_OB = 80
-RSI_OS = 20
+RSI_OB = 75
+RSI_OS = 25
 
 MFI_OB = 80
 MFI_OS = 20
@@ -74,7 +74,7 @@ round_off = symbol_Loc[-1]
 #==============================================================================#
 # Get Historical Data
 
-csticks = client.futures_klines(symbol=TRADE_SYMBOL, interval=cfg.testFrame)
+csticks = client.futures_klines(symbol=TRADE_SYMBOL, interval=cfg.tframe)
 df = pd.DataFrame(csticks)
 df_edited = df.drop([0, 6, 7, 8, 9, 10, 11], axis=1)
 df_final = df_edited.drop(df_edited.tail(1).index)
@@ -86,10 +86,53 @@ df_final['MFI'] = round(talib.MFI(
 #==============================================================================#
 
 
+def order(side, quantity, symbol, order_type=ORDER_TYPE_MARKET):
+    try:
+        order = client.futures_create_order(
+            symbol=symbol, type=order_type, side=side, quantity=quantity)
+
+        now = datetime.datetime.now()
+        print('Current time is: {}'.format(now.strftime("%d/%m/%Y %H:%M:%S")))
+        #print(f"Order: [{order}]")
+        print(
+            f"Moeda: {order['symbol']}\nSide: {order['side']}\nType: {order['type']}\nQtd CrtiptoMoeda: {order['origQty']};")
+
+    except Exception as error:
+        print(error)
+
+
+def stop_Order(symbol, side, oType, quantity, reduceOnly='true'):
+    try:
+        print("#"*74)
+        print(f"\nstop_Order Function:")
+        print(f"Side: [{side}]")
+
+        stop_Order = client.futures_create_order(
+            symbol=symbol,
+            side=side,
+            type=oType,
+            quantity=quantity,
+            reduceOnly=reduceOnly)
+
+        if side == SIDE_SELL:
+            print(f"StopWin:\n{stop_Order}")
+            print("#"*74)
+
+        elif side == SIDE_BUY:
+            print(f"StopLoss:\n {stop_Order}")
+            print("#"*74)
+
+    except Exception as error:
+        if side == SIDE_SELL:
+            print(f"StopWin Error: {error}")
+        elif side == SIDE_BUY:
+            print(f"StopLoss Error: {error}")
+
+
 def on_open(ws):
     print('='*74)
     print('Recebendo Dados...')
-    print(f"Tempo de Mercado: [{cfg.testFrame}]")
+    print(f"Tempo de Mercado: [{cfg.tframe}]")
     print('='*74)
 
 
@@ -139,7 +182,7 @@ def on_message(ws, message):
         print(f"Open: {open_data}   |   High: {high_data}",
               f"  |   Low: {low_data}  |  Close: {close_data}")
         # TODO: Formatar para padrão
-        print(f"RSI: {last_RSI}       |   MFI: {last_MFI} ")
+        print(f"RSI: {last_RSI}      | MFI: {last_MFI} ")
 
         if float(cv_initMargin) == 0:
             print("Nenhuma 'position' em andamento. Aguardando...")
@@ -151,20 +194,21 @@ def on_message(ws, message):
             in_position = True
             percent_profit = (float(cv_profit) / float(cv_initMargin)) * 100
             fee = (float(cv_initMargin)*levarege) * 0.0003
-            r_Profit = round(float(cv_profit, 3) - fee)
+            #r_Profit = round(float(cv_profit, 3) - fee)
 
             print('='*74)
             print(f'Margin: {round(float(cv_initMargin),3)}')
             print(f"Profit: {round(float(cv_profit),3)}")
-            print(f"Real Profit: {r_Profit}")
+            #print(f"Real Profit: {r_Profit}")
             print(f"PNL(ROE%): {round(percent_profit, 2)}%")
-            print(f"Fee: {fee} (ALTERAR! Calcular Fee em cima de 'Size'])")
+            print(f"Fee: {fee}")
             print('='*74)
             print(f'Position: {in_position}')
 
 #==============================================================================#
 
 
+#==============================================================================#
 ws = websocket.WebSocketApp(F_SOCKET, on_open=on_open,
                             on_close=on_close, on_message=on_message)
 ws.run_forever()

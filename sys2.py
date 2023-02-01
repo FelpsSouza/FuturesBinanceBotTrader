@@ -1,4 +1,4 @@
-import websocket
+import websockets
 import config as cfg
 import json
 import talib
@@ -12,7 +12,7 @@ import csv
 from array import array
 from numpy import genfromtxt
 import pprint
-
+import asyncio
 
 F_SOCKET = cfg.fWsLink
 
@@ -82,12 +82,12 @@ else:
 
 '''for i in ass:
     print(i)'''
-a = client.futures_recent_trades(symbol=TRADE_SYMBOL)
+'''a = client.futures_recent_trades(symbol=TRADE_SYMBOL)
 h = client.futures_get_all_orders(symbol=TRADE_SYMBOL, limit=1)
 for i in h:
     print(f"Symbol: {i['symbol']}")
     print(f"Type: {i['type']}")
-    print(f"Side: {i['side']}")
+    print(f"Side: {i['side']}")'''
 
 '''client.futures_create_order(
     symbol=TRADE_SYMBOL,
